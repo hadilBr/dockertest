@@ -1,11 +1,6 @@
-# syntax=docker/dockerfile:1
-FROM busybox:latest
-COPY --chmod=755 <<EOF /app/run.sh
-#!/bin/sh
-while true; do
-  echo -ne "The time is now $(date +%T)\\r"
-  sleep 1
-done
-EOF
+FROM python:3.11.2
+COPY . /app/
+WORKDIR /app
+RUN pip install -r requirements.txt
+CMD python app.py
 
-ENTRYPOINT /app/run.sh
