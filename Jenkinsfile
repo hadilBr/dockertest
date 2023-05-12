@@ -1,22 +1,28 @@
 pipeline {
-   agent any
+    agent 
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub')
+    }
 
     stages {
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Building the app'
+                sh 'docker build -t Jenkins_test:latest .'
             }
         }
-        stage('Test') {
+
+        stage('Push Docker Image') {
             steps {
-                echo 'Testing the app'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the app'
+                sh 'echo $DOCKERHUB_CREDENTIALS_USR | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push Jenkins_test:latest'
             }
         }
     }
+
+    post {
+        always {
+            sh 'docker logout'
+        }
+    }
 }
-     
